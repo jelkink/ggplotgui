@@ -57,7 +57,7 @@ There are four ways in which you can use data within this GUI:
 
 A ggplot-graph can be made through point and click (after data is loaded and through the ggplot-tab):
 ![](man/figures/tab_ggplot.png)
-Aesthetics of the graph can be changed with the tabs on the right hand side. 
+Aesthetics of the graph can be changed with the tabs on the right hand side.
 
 An interactive version (through plotly) of the graph is displayed (the Plotly-tab) to allow for further exploration of the data:
 ![](man/figures/tab_plotly.png)
@@ -68,6 +68,8 @@ Importantly, the R-code to recreate the graphs will be provided (in the R-code t
 
 # Current functionality
 Currently, only widely used graphs are implemented: boxplots, density plots, dot + error plots, dotplots, histograms, scatter plots, and violin plots. Only a select number of aesthetic features can be changed. Please do report bugs and send feature requests.
+
+This forked project by Jos Elkink is an attempt to add bar charts to the core functionality.
 
 # Acknowledgements
 I am grateful to the people who made [R](https://www.r-project.org/), and to [Hadley Wicham](http://hadley.nz/) for making such good packages (and open access books describing them), that allow even low-skilled and low-talented programmers like myself to be able to contribute to R. This package makes use of: [ggplot2](http://ggplot2.tidyverse.org/), [Shiny](http://shiny.rstudio.com/), [stringr](http://stringr.tidyverse.org/), [plotly](https://plot.ly/r/), [readr](http://readr.tidyverse.org/), [readxl](http://readxl.tidyverse.org/), [haven](http://haven.tidyverse.org/), and [RColorBrewer](https://cran.r-project.org/web/packages/RColorBrewer/RColorBrewer.pdf). Package development through [RStudio](https://www.rstudio.com/) and [Github](https://github.com/), and with the help of [R Markdown](http://rmarkdown.rstudio.com) and [devtools](https://www.rstudio.com/products/rpackages/devtools/). The code that allows for online data input was based somewhat on the [BoxPlotR Shiny app](https://github.com/VizWizard/BoxPlotR.shiny). Many thanks to Wilmer Joling who set up the illustrous "[docker](https://www.docker.com/)" and [website](https://site.shinyserver.dck.gmw.rug.nl/ggplotgui/) where the online version of this packages runs.   

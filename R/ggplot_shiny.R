@@ -14,7 +14,6 @@
 #' @importFrom stringr str_replace_all
 #' @importFrom readr read_delim
 
-
 #' @export
 ggplot_shiny <- function( dataset = NA ) {
 
@@ -22,7 +21,7 @@ ggplot_shiny <- function( dataset = NA ) {
     headerPanel("ggplot GUI"),
     sidebarPanel(width = 3,
       conditionalPanel(
-        condition = "input.tabs=='Data upload'",
+        condition = "input.tabs=='Data upload' || input.tabs=='Data format'",
         h4("Data upload"),
         radioButtons(
           "data_input", "",
@@ -85,7 +84,7 @@ ggplot_shiny <- function( dataset = NA ) {
         selectInput(inputId = "Type",
                     label = "Type of graph:",
                     choices = c("Boxplot", "Density", "Dot + Error",
-                                "Dotplot", "Histogram", "Scatter", "Violin"),
+                                "Dotplot", "Histogram", "Scatter", "Violin", "Barchart"),
                     selected = "Violin"),
         selectInput("y_var", "Y-variable", choices = ""),
         conditionalPanel(
@@ -129,6 +128,10 @@ ggplot_shiny <- function( dataset = NA ) {
                       min = 0.01, max = 2, value = 1, step = 0.1)
         ),
         conditionalPanel(
+          condition = "input.Type == 'Barchart'",
+          selectInput("position", "Bar position:", choices = c("stack", "dodge"), selected = "stack")
+        ),
+        conditionalPanel(
           condition = "input.Type == 'Scatter'",
           checkboxInput(inputId = "line",
                         label = strong("Show regression line"),
@@ -161,12 +164,12 @@ ggplot_shiny <- function( dataset = NA ) {
       )
     ),
     h6("For more info see the 'Info'-tab or visit",
-       a("https://github.com/gertstulp/ggplotgui",
-         href = "https://github.com/gertstulp/ggplotgui")),
+       a("https://github.com/jelkink/ggplotgui",
+         href = "https://github.com/jelkink/ggplotgui")),
 
-#####################################
-########### OUPUT TABS ##############
-#####################################
+######################################
+########### OUTPUT TABS ##############
+######################################
 
     mainPanel(width = 6,
       tabsetPanel(
@@ -178,7 +181,7 @@ ggplot_shiny <- function( dataset = NA ) {
                                   "Download pdf of figure"),
                    plotOutput("out_ggplot"))
                 ),
-        tabPanel("Plotly", plotlyOutput("out_plotly")),
+        # tabPanel("Plotly", plotlyOutput("out_plotly")),
         tabPanel("R-code", verbatimTextOutput("out_r_code")),
         tabPanel("Info",
 h3("Background"),
@@ -220,25 +223,20 @@ p(
 p(
   "This application was created by ",
   a("Gert Stulp", href = "http://www.gertstulp.com/"),
+  ". Edits to allow for bar charts added by ",
+  a("Jos Elkink", href = "http://www.joselkink.net/"),
   ". Please do report bugs and send feature requests to ",
-  a("g.stulp[at]rug.nl", href = "mailto:g.stulp@rug.nl"),
+  a("jos.elkink[at]ucd.ie", href = "mailto:jos.elkink@ucd.ie"),
   ". Visit ",
-  a("https://github.com/gertstulp/ggplotgui",
-    href = "https://github.com/gertstulp/ggplotgui"),
+  a("https://github.com/jelkink/ggplotgui",
+    href = "https://github.com/jelkink/ggplotgui"),
   "for further description and code."
 ),
 h3("Acknowledgements"),
 p(
-  "Thanks to Wilmer Joling for setting up the ",
-  a("website", href = "https://site.shinyserver.dck.gmw.rug.nl/ggplotgui/"),
-  "which is based on the magical but incomprehensible",
-  a("docker", href = "https://www.docker.com/"),
-  ". Thanks to ",
-  a("Hadley Wicham", href = "http://hadley.nz/"),
-  " for making such good packages (and open access
-  books describing them), that allow even low-skilled
-  and low-talented programmers like myself to be able to
-  contribute to R"
+  "Thanks to ",
+  a("Gert Stulp", href = "https://www.gertstulp.com/"),
+  " for making the original version of this code available."
 )
         ),
         id = "tabs"
@@ -448,7 +446,7 @@ p(
                                  is.double(x),
                                df_shiny()))
 
-      # Make list of variables that are not factors
+      # Make list of variables that are factors
       nms_fact <- names(Filter(function(x) is.factor(x) ||
                                  is.logical(x) ||
                                  is.character(x),
@@ -464,7 +462,7 @@ p(
           c("No factors available" = ".")
         else c("No groups" = ".", nms_fact)
 
-      updateSelectInput(session, "y_var", choices = avail_con)
+      updateSelectInput(session, "y_var", choices = avail_all)
       updateSelectInput(session, "x_var", choices = c("No x-var" = "' '", nms))
       updateSelectInput(session, "group", choices = avail_all)
       updateSelectInput(session, "facet_row",  choices = avail_fac)
@@ -532,12 +530,14 @@ p(
     string_code <- reactive({
 
       # Variable used for how to deal with x/y in ggplot
-      gg_x_y <- input$Type == "Histogram" ||
-                input$Type == "Density"
+      gg_x_y <- input$Type == "Histogram" ||      # true means aesthetic x is mapped to y variable in interface
+                input$Type == "Density" ||
+                (input$Type == "Barchart" & input$x_var == "' '")
       # Variable used for how to deal with colour/fill
       gg_fil <- input$Type == "Histogram" ||
                 input$Type == "Density" ||
-                input$Type == "Dotplot"
+                input$Type == "Dotplot" ||
+                input$Type == "Barchart"
 
       # Only plot jitter when graphs allow them
       if (gg_fil || input$Type == "Scatter")
@@ -577,6 +577,10 @@ p(
           "geom_point()",
         if (input$Type == "Scatter" && input$line)
           "+ geom_smooth(se = input$se, method = 'input$smooth')",
+        if (input$Type == "Barchart" && input$x_var == "' '")
+          paste0("geom_bar(position = '", input$position, "')"),
+        if (input$Type == "Barchart" && input$x_var != "' '")
+          paste0("geom_bar(stat = 'summary', fun.y = 'mean', position = '", input$position, "')"),
         if (jitt)
           paste(" + geom_jitter(size = input$size_jitter, ",
                 "alpha = input$opac_jitter, width = input$width_jitter, ",
@@ -744,9 +748,9 @@ p(
 
     })
 
-#####################################
-#### GENERATE R-CODE FOR OUTPUT #####
-#####################################
+##################################
+#### GENERATE PDF FOR OUTPUT #####
+##################################
 
   output$download_plot_PDF <- downloadHandler(
       filename <- function() {

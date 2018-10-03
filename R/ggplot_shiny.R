@@ -181,7 +181,7 @@ ggplot_shiny <- function( dataset = NA ) {
                                   "Download pdf of figure"),
                    plotOutput("out_ggplot"))
                 ),
-        # tabPanel("Plotly", plotlyOutput("out_plotly")),
+        tabPanel("Plotly", plotlyOutput("out_plotly")),
         tabPanel("R-code", verbatimTextOutput("out_r_code")),
         tabPanel("Info",
 h3("Background"),

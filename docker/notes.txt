@@ -1,0 +1,65 @@
+Need to have docker and docker-machine locally installed on the Mac.
+
+You can list all machines where docker can run with:
+
+docker-machine ls
+
+If there is no Digital Ocean droplet listed there, you can try
+
+docker-machine create ....
+
+but probably there is already one, even if it's not running, so that you can just use:
+
+docker-machine start FPR-droplet
+
+You can access this through SSH with:
+
+docker-machine ssh FPR-droplet
+
+So FPR-droplet is the Digital Ocean droplet, the virtual machine which has docker installed, on which we can run containers.
+
+By default, the docker on the Mac itself is active, so if you run commands with docker, it will be local. If you want to use instead the droplet, you can change settings for the shell with:
+
+docket-machine env FPR-droplet
+eval $(docker-machine env FPR-droplet)
+
+You can reset this with:
+
+eval $(docker-machine env -u)
+
+Now with docker you can run, start, stop, remove containers and also SSH to the container.
+
+If the local code has changed, go to the folder that contains the Dockerfile and do:
+
+docker build . -t jelkink/fpr
+docker push jelkink/fpr
+
+You probably also want to then update git:
+
+cd ..
+git status
+git add ...
+git commit -m ...
+git push
+
+To ensure the latest image is on the server:
+
+docker pull jelkink/fpr
+
+To start a new container on the server:
+
+docker run -d -p 80:80 --name ggplotgui jelkink/fpr
+
+This means it runs as a daemon, maps local port 80 to remote 80, names it ggplotgui, and uses image jelkink/fpr
+
+You can start/stop remove with:
+
+docker stop jelkink/fpr
+docker start jelkink/fpr
+docker rm jelkink/fpr
+
+Note that state is persistent after stop, but not after rm.
+
+You can SSH to the container with:
+
+docker exec -ti ggplotgui bash

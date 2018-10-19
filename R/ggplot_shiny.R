@@ -788,5 +788,5 @@ p(
     # End R-session when browser closed
     session$onSessionEnded(stopApp)
   }
-  shinyApp(ui, server, options = list(port = 80))
+  shinyApp(ui, server)
 }

@@ -1,7 +1,7 @@
 #!/bin/sh
 
-#while true
-#do
+while true
+do
     R -f /srv/shiny-server/docker/start_on_docker.R
-#    sleep 1
-#done
+    sleep 1
+done

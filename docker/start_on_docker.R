@@ -1,4 +1,4 @@
-setwd('/srv/shiny-server/ggplotgui/')
+setwd('/srv/shiny-server/docker/')
 
 data <- rio::import('../docker/data/ESS_FPR.Rdata')
 

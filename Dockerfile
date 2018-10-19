@@ -6,4 +6,5 @@ RUN sudo R -e "install.packages(c('shiny', 'dplyr', 'plotly', 'rmarkdown', 'ggpl
 RUN chmod +x /srv/shiny-server/ggplotgui/continuous_shiny_run.sh
 EXPOSE 3838
 
-CMD /srv/shiny-server/ggplotgui/continuous_shiny_run.sh
+# CMD /srv/shiny-server/ggplotgui/continuous_shiny_run.sh
+CMD bash

@@ -9,6 +9,7 @@
 #' @import shiny
 #' @import readxl
 #' @import haven
+#' @import rio
 #' @import RColorBrewer
 #' @importFrom plotly ggplotly plotlyOutput renderPlotly
 #' @importFrom stringr str_replace_all
@@ -49,6 +50,7 @@ ggplot_shiny <- function( dataset = NA ) {
                            "Excel" = "Excel",
                            "SPSS" = "SPSS",
                            "Stata" = "Stata",
+                           "Rdata" = "Rdata",
                            "SAS" = "SAS"),
                       selected = "text"),
           conditionalPanel(
@@ -83,9 +85,10 @@ ggplot_shiny <- function( dataset = NA ) {
         h4("Create visualization"),
         selectInput(inputId = "Type",
                     label = "Type of graph:",
-                    choices = c("Boxplot", "Density", "Dot + Error",
-                                "Dotplot", "Histogram", "Scatter", "Violin", "Barchart"),
-                    selected = "Violin"),
+                    choices = c("Scatter", "Scatter (jittered)", "Barchart", "Boxplot", "Histogram", "Dotplot"),
+                    # choices = c("Boxplot", "Density", "Dot + Error",
+                    #             "Dotplot", "Histogram", "Scatter", "Violin", "Barchart"),
+                    selected = "Scatter (jittered)"),
         selectInput("y_var", "Y-variable", choices = ""),
         conditionalPanel(
           condition = "input.Type!='Density' && input.Type!='Histogram'",
@@ -132,7 +135,7 @@ ggplot_shiny <- function( dataset = NA ) {
           selectInput("position", "Bar position:", choices = c("stack", "dodge"), selected = "stack")
         ),
         conditionalPanel(
-          condition = "input.Type == 'Scatter'",
+          condition = "input.Type == 'Scatter' || input.Type == 'Scatter (jittered)'",
           checkboxInput(inputId = "line",
                         label = strong("Show regression line"),
                         value = FALSE),
@@ -163,9 +166,9 @@ ggplot_shiny <- function( dataset = NA ) {
         h4("Info")
       )
     ),
-    h6("For more info see the 'Info'-tab or visit",
-       a("https://github.com/jelkink/ggplotgui",
-         href = "https://github.com/jelkink/ggplotgui")),
+#    h6("For more info see the 'Info'-tab or visit",
+#       a("https://github.com/jelkink/ggplotgui",
+#         href = "https://github.com/jelkink/ggplotgui")),
 
 ######################################
 ########### OUTPUT TABS ##############
@@ -174,14 +177,14 @@ ggplot_shiny <- function( dataset = NA ) {
     mainPanel(width = 6,
       tabsetPanel(
         type = "tabs",
-        tabPanel("Data upload", dataTableOutput("out_table")),
         tabPanel("ggplot",
                  mainPanel(
                    downloadButton("download_plot_PDF",
                                   "Download pdf of figure"),
                    plotOutput("out_ggplot"))
                 ),
-        tabPanel("Plotly", plotlyOutput("out_plotly")),
+        tabPanel("Data upload", dataTableOutput("out_table")),
+#        tabPanel("Plotly", plotlyOutput("out_plotly")),
         tabPanel("R-code", verbatimTextOutput("out_r_code")),
         tabPanel("Info",
 h3("Background"),
@@ -223,7 +226,7 @@ p(
 p(
   "This application was created by ",
   a("Gert Stulp", href = "http://www.gertstulp.com/"),
-  ". Edits to allow for bar charts added by ",
+  ". Edits to allow for bar charts and remove some advanced functionality added by ",
   a("Jos Elkink", href = "http://www.joselkink.net/"),
   ". Please do report bugs and send feature requests to ",
   a("jos.elkink[at]ucd.ie", href = "mailto:jos.elkink@ucd.ie"),
@@ -352,7 +355,7 @@ p(
               )
             ),
             conditionalPanel(
-              condition = "input.jitter",
+              condition = "input.jitter || input.Type == 'Scatter (jittered)'",
               checkboxInput("adj_jitter",
                             strong("Change look jitter"), FALSE),
               conditionalPanel(
@@ -498,6 +501,8 @@ p(
               data <- read_dta(file_in$datapath)
             } else if (input$file_type == "SAS") {
               data <- read_sas(file_in$datapath)
+            } else if (input$file_type == "Rdata") {
+              data <- rio::import(file_in$datapath)
             }
           })
         }
@@ -543,8 +548,20 @@ p(
       if (gg_fil || input$Type == "Scatter")
         jitt <- FALSE else jitt <- input$jitter
 
+      variables <- paste0(c(
+          if (input$y_var != ".") input$y_var else NULL,
+          if (input$x_var != ".") input$x_var else NULL,
+          if (input$group != ".") input$group else NULL,
+          if (input$facet_row != ".") input$facet_row else NULL,
+          if (input$facet_col != ".") input$facet_col else NULL), collapse = ", ")
+
+      # dfSelected <- df[, variables]
+      # dfSelected <- dfSelected[complete.cases(dfSelected), ]
+
       p <- paste(
-        "ggplot(df, aes(",
+        "dfSelected <- as.data.frame(subset(df, select = c(", variables, ")))\n",
+        "dfSelected <- dfSelected[complete.cases(dfSelected), ]\n\n",
+        "graph <- ggplot(dfSelected, aes(",
         if (gg_x_y) {
           "x = input$y_var"
         } else {
@@ -575,16 +592,19 @@ p(
                 width=0, fun.args = list(mult = input$CI))", sep = ""),
         if (input$Type == "Scatter")
           "geom_point()",
-        if (input$Type == "Scatter" && input$line)
-          "+ geom_smooth(se = input$se, method = 'input$smooth')",
         if (input$Type == "Barchart" && input$x_var == "' '")
           paste0("geom_bar(position = '", input$position, "')"),
         if (input$Type == "Barchart" && input$x_var != "' '")
           paste0("geom_bar(stat = 'summary', fun.y = 'mean', position = '", input$position, "')"),
+        if (input$Type == "Scatter (jittered)")
+          paste("geom_jitter(size = input$size_jitter, ",
+                  "alpha = input$opac_jitter, width = input$width_jitter)", sep = ""),
         if (jitt)
           paste(" + geom_jitter(size = input$size_jitter, ",
                 "alpha = input$opac_jitter, width = input$width_jitter, ",
                 "colour = 'input$col_jitter')", sep = ""),
+        if ((input$Type == "Scatter" || input$Type == "Scatter (jittered)") && input$line)
+          "+ geom_smooth(se = input$se, method = 'input$smooth')",
         sep = ""
       )
 
@@ -730,7 +750,7 @@ p(
         "# You need the following package(s):\n",
         "library(\"ggplot2\")\n\n",
         "# The code below will generate the graph:\n",
-        "graph <- ",
+        # "graph <- ",
         gg_code,
         "\ngraph\n\n",
         "# If you want the plot to be interactive,\n",

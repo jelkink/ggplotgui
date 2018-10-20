@@ -44,6 +44,14 @@ git add ...
 git commit -m ...
 git push
 
+Note that the docker container takes the R code directly from github, so as long as github is up-to-date, and docker settings have not changed, the only thing needed to update the server is:
+
+docker restart ggplotgui
+
+The data file is not included in github, so to update that you need:
+
+docker cp ~/fpr/assignment/ESS_FPR.Rdata ggplotgui:/srv/shiny-server/docker/data/ESS_FPR.Rdata
+
 To ensure the latest image is on the server:
 
 docker pull jelkink/fpr

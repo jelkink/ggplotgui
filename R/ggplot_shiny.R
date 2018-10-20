@@ -85,7 +85,7 @@ ggplot_shiny <- function( dataset = NA ) {
         h4("Create visualization"),
         selectInput(inputId = "Type",
                     label = "Type of graph:",
-                    choices = c("Scatter", "Scatter (jittered)", "Barchart", "Boxplot", "Histogram", "Dotplot"),
+                    choices = c("Scatter", "Scatter (jittered)", "Barchart", "Boxplot", "Histogram"),
                     # choices = c("Boxplot", "Density", "Dot + Error",
                     #             "Dotplot", "Histogram", "Scatter", "Violin", "Barchart"),
                     selected = "Scatter (jittered)"),
@@ -548,9 +548,9 @@ p(
       if (gg_fil || input$Type == "Scatter")
         jitt <- FALSE else jitt <- input$jitter
 
-      variables <- paste0(c(
+      variables <- paste0(c("id", "sex", "immigrant",
           if (input$y_var != ".") input$y_var else NULL,
-          if (input$x_var != ".") input$x_var else NULL,
+          if (input$x_var != "' '") input$x_var else NULL,
           if (input$group != ".") input$group else NULL,
           if (input$facet_row != ".") input$facet_row else NULL,
           if (input$facet_col != ".") input$facet_col else NULL), collapse = ", ")

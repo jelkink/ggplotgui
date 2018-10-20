@@ -1,5 +1,7 @@
 Need to have docker and docker-machine locally installed on the Mac.
 
+In my configuration, I use Digital Ocean to host the docker containers; I use github for my code and docker hub for my images.
+
 You can list all machines where docker can run with:
 
 docker-machine ls
@@ -57,6 +59,14 @@ You can start/stop remove with:
 docker stop jelkink/fpr
 docker start jelkink/fpr
 docker rm jelkink/fpr
+
+You can see running containers with:
+
+docker ps
+
+And available images with:
+
+docker images
 
 Note that state is persistent after stop, but not after rm.
 

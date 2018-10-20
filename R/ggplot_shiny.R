@@ -85,7 +85,7 @@ ggplot_shiny <- function( dataset = NA ) {
         h4("Create visualization"),
         selectInput(inputId = "Type",
                     label = "Type of graph:",
-                    choices = c("Scatter", "Scatter (jittered)", "Barchart", "Boxplot", "Histogram"),
+                    choices = c("Scatter", "Scatter (jittered)", "Barchart", "Boxplot", "Histogram", "Density"),
                     # choices = c("Boxplot", "Density", "Dot + Error",
                     #             "Dotplot", "Histogram", "Scatter", "Violin", "Barchart"),
                     selected = "Scatter (jittered)"),

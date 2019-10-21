@@ -8,7 +8,7 @@ docker-machine ls
 
 If there is no Digital Ocean droplet listed there, you can try
 
-docker-machine create --driver digitalocean --digitalocean-access-token 8dc940ef3bdb2f0a3a5ec1a60c7405fe47443542dfcc577e9c759b5a457df78f FPR-droplet
+docker-machine create --driver digitalocean --digitalocean-access-token xxxxx FPR-droplet
 
 but probably there is already one, even if it's not running, so that you can just use:
 

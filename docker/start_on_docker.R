@@ -20,10 +20,6 @@ host <- getEnvStr("HOST", "172.17.0.2")
 
 setwd('/srv/shiny-server/docker/')
 
-# Although ggplotgui is installed when the image is created, this ensures it's always
-# up-to-date with the latest github version.
-devtools::install_github('jelkink/ggplotgui')
-
 # Data is downloaded from the web server to ensure it is up to date.
 data <- rio::import('http://www.joselkink.net/files/data/ESS_FPR.Rdata')
 

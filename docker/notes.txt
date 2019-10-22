@@ -22,7 +22,7 @@ So FPR-droplet is the Digital Ocean droplet, the virtual machine which has docke
 
 By default, the docker on the Mac itself is active, so if you run commands with docker, it will be local. If you want to use instead the droplet, you can change settings for the shell with:
 
-docket-machine env FPR-droplet
+docker-machine env FPR-droplet
 eval $(docker-machine env FPR-droplet)
 
 You can reset this with:

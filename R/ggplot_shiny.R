@@ -727,7 +727,7 @@ p(
 #####################################
 
     output$out_table <- renderDataTable(
-      df_shiny()[1:5, ]
+      data.frame(message = "Data table cannot be displayed")
     )
 
     width <- reactive ({ input$fig_width })

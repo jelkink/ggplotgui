@@ -58,7 +58,7 @@ docker pull jelkink/fpr
 
 To start a new container on the server:
 
-docker run -d -p 80:80 --name ggplotgui jelkink/fpr
+docker run -d -p 80:80 --name ggplotgui1 jelkink/fpr
 
 This means it runs as a daemon, maps local port 80 to remote 80, names it ggplotgui, and uses image jelkink/fpr
 

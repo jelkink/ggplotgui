@@ -189,17 +189,19 @@ ggplot_shiny <- function( dataset = NA ) {
         tabPanel("Info",
 h3("Assignment"),
 p(
-  "This interface is used for the", a("Foundations of Political Research", href = "http://www.joselkink.net/FPR-Autumn-2018.php"), "module, as
+  "This interface is used for the", a("Foundations of Political Research", href = "http://www.joselkink.net/FPR-Autumn-2019.php"), "module, as
   the core component of a data project. All students are expected to produce a
   univariate graph, a bivariate graph to test a relationship, and a multivariate
   graph to investigate potential confounding, and then to write a short essay
-  about it, using a precisely defined template. Relative to the original version
+  about it, using a precisely defined template."),
+p(
+  " Relative to the original version
   of ggplotgui this is therefore a simplified version, removing some functionality
   (some plots, plotly, etc.), but also adding barcharts, which many might need.
   Barcharts are introduced both as univariate graphs (showing frequencies) and as
   bivariate graphs (showing means on a scale variable based on categories in a
   categorical variable). The standard data set has been replaced with a smaller sample of
-  European Social Survey for the exercise. One can still use their own data set, however."
+  European Social Survey for the exercise. One can still use one's own data set, however."
 ),
 h3("Background"),
 p(
@@ -400,7 +402,7 @@ p(
                                     "light" = "theme_light()",
                                     "line_draw" = "theme_linedraw()",
                                     "minimal" = "theme_minimal()"),
-                        selected = "theme_bw()")
+                        selected = "theme_minimal()")
           ),
           tabPanel(
             "Legend",
@@ -725,7 +727,7 @@ p(
 #####################################
 
     output$out_table <- renderDataTable(
-      df_shiny()
+      df_shiny()[1:5, ]
     )
 
     width <- reactive ({ input$fig_width })

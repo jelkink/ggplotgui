@@ -5,7 +5,7 @@ $ips = array(
     "165.22.37.217"
 );
 
-$ports = range(8080, 8087);
+$ports = range(8080, 8084);
 
 header("Location: http://" . $ips[array_rand($ips)] . ":" . $ports[array_rand($ports)]);
 

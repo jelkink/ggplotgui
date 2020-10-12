@@ -564,7 +564,7 @@ p(
       if (gg_fil || input$Type == "Scatter")
         jitt <- FALSE else jitt <- input$jitter
 
-      variables <- paste0(c("id", "sex", "immigrant",
+      variables <- paste0(c(# "id", "sex", "immigrant",
           if (input$y_var != ".") input$y_var else NULL,
           if (input$x_var != "' '") input$x_var else NULL,
           if (input$group != ".") input$group else NULL,

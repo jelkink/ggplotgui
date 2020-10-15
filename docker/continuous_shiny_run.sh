@@ -6,6 +6,6 @@
 
 while true
 do
-    HOST=`route | grep default | sed "s/default[ ]*//" | sed "s/[ ].*//"` R -f /srv/shiny-server/docker/start_on_docker.R
+    R -f /srv/shiny-server/docker/start_on_docker.R
     sleep 1
 done

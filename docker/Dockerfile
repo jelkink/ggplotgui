@@ -6,6 +6,7 @@ RUN sudo apt-get upgrade -y
 RUN sudo apt-get install -y libssl-dev xdg-utils net-tools curl vim libxml2-dev ncat
 RUN sudo R -e "install.packages(c('shiny', 'dplyr', 'plotly', 'rmarkdown', 'ggplot2', 'readxl', 'haven', 'rio', 'stringr', 'readr', 'devtools', 'Rcpp', 'stringi'))"
 RUN sudo R -e "devtools::install_github('jelkink/ggplotgui')"
+# RUN sudo R -e "devtools::install_version('httpuv', '1.4.3')"
 RUN chmod +x /srv/shiny-server/docker/continuous_shiny_run.sh
 
 EXPOSE 80

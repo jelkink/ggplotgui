@@ -16,7 +16,7 @@ getEnvStr <- function(name, default = "") {
 # Read environment variables for port and host, but default should be OK when only
 # one Shiny script per docker container.
 port <- getEnvInt("PORT", 80)
-host <- getEnvStr("HOST", "172.17.0.0")
+host <- "0.0.0.0" # getEnvStr("HOST", "172.17.0.0")
 
 setwd('/srv/shiny-server/docker/')
 

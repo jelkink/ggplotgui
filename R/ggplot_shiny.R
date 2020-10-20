@@ -183,7 +183,7 @@ ggplot_shiny <- function( dataset = NA ) {
                                   "Download pdf of figure"),
                    plotOutput("out_ggplot"))
                 ),
-        tabPanel("Data upload", dataTableOutput("out_table")),
+#        tabPanel("Data upload", dataTableOutput("out_table")),
 #        tabPanel("Plotly", plotlyOutput("out_plotly")),
         tabPanel("R-code", verbatimTextOutput("out_r_code")),
         tabPanel("Info",
@@ -307,6 +307,9 @@ p(
             ),
             checkboxInput(inputId = "rot_txt",
                           label = strong("Rotate text x-axis"),
+                          value = FALSE),
+            checkboxInput(inputId = "rot_axes",
+                          label = strong("Rotate plot"),
                           value = FALSE),
             checkboxInput(inputId = "adj_fnt",
                           label = strong("Change font"),
@@ -564,7 +567,7 @@ p(
       if (gg_fil || input$Type == "Scatter")
         jitt <- FALSE else jitt <- input$jitter
 
-      variables <- paste0(c(# "id", "sex", "immigrant",
+      variables <- paste0(c("id", "id", # "sex", "immigrant",
           if (input$y_var != ".") input$y_var else NULL,
           if (input$x_var != "' '") input$x_var else NULL,
           if (input$group != ".") input$group else NULL,
@@ -653,6 +656,11 @@ p(
 
       # If a theme specified
       p <- paste(p, "+", input$theme)
+
+      # If axes are rotated
+      if (input$rot_axes) {
+          p <- paste(p, "+ coord_flip()")
+      }
 
       # If theme features are specified
       if (input$adj_fnt_sz ||

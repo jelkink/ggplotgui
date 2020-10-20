@@ -26,5 +26,6 @@ data <- rio::import('http://www.joselkink.net/files/data/INES_FPR.Rdata')
 # Port and host can be set from outside, but does not appear necessary?
 options(shiny.port = port)
 options(shiny.host = host)
+options(error = traceback)
 
 ggplotgui::ggplot_shiny(data)

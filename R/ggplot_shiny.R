@@ -567,30 +567,35 @@ p(
       if (gg_fil || input$Type == "Scatter")
         jitt <- FALSE else jitt <- input$jitter
 
-      variables <- paste0(c("id", "id", # "sex", "immigrant",
+      variables <- paste0(c("id", "id",
           if (input$y_var != ".") input$y_var else NULL,
           if (input$x_var != "' '") input$x_var else NULL,
           if (input$group != ".") input$group else NULL,
           if (input$facet_row != ".") input$facet_row else NULL,
           if (input$facet_col != ".") input$facet_col else NULL), collapse = ", ")
 
-      # dfSelected <- df[, variables]
-      # dfSelected <- dfSelected[complete.cases(dfSelected), ]
+      aes_elements <- NULL
+
+      if (gg_x_y && !(input$y_var %in% c(" ", ""))) {
+        aes_elements <- c(aes_elements, "x = input$y_var")
+      } else if (!(input$y_var %in% c(" ", "")) &&
+            !(input$x_var %in% c(" ", ""))) {
+        aes_elements <- c(aes_elements, "x = input$x_var", "y = input$y_var")
+      }
+
+      if (input$group != "." && gg_fil) {
+        aes_elements <- c(aes_elements, "fill = input$group")
+      }
+
+      if (input$group != "." && !gg_fil) {
+        aes_elements <- c(aes_elements, "colour = input$group")
+      }
 
       p <- paste(
         "dfSelected <- as.data.frame(subset(df, select = c(", variables, ")))\n",
         "dfSelected <- dfSelected[complete.cases(dfSelected), ]\n\n",
         "graph <- ggplot(dfSelected, aes(",
-        if (gg_x_y) {
-          "x = input$y_var"
-        } else {
-          "x = input$x_var, y = input$y_var"
-        },
-        if (input$group != "." && gg_fil) {
-          ", fill = input$group"
-        } else if (input$group != "." && !gg_fil) {
-          ", colour = input$group"
-        },
+        paste0(aes_elements, collapse = ", "),
         ")) + ",
         if (input$Type == "Histogram")
           paste("geom_histogram(position = 'identity', alpha = input$alpha, ",
